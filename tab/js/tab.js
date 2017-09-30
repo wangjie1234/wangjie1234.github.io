@@ -174,13 +174,13 @@
   /**
      * 右击事件
      * */
-    //取消右键  
+    //取消右键（有待优化）
 	$('html').on('contextmenu', function (){return false;}).click(function(){  
 	    $('.popup_menu').hide();  
 	});  
 	//注册右击事件
 	$('html').on('contextmenu','a',function(e){
-		var that= this;
+	var that= this;
 	    var popupmenu = kyoPopupMenu.initContextmenu(that);  
 	    l = ($(document).width() - e.clientX) < popupmenu.width() ? (e.clientX - popupmenu.width()) : e.clientX;  
 	    t = ($(document).height() - e.clientY) < popupmenu.height() ? (e.clientY - popupmenu.height()) : e.clientY;  
@@ -192,7 +192,6 @@
 	kyoPopupMenu = (function(){ 
 	return {  
 	    initContextmenu: function (obj) {
-	    	//获取当前触发右键点击事件的table的ID
 	        $('.popup_menu').remove(); 
 	        var html='<div class="popup_menu">';
 	        		html+='<ul style="list-style:none;margin:0;	padding:0;font-size:12px;">';
@@ -221,7 +220,7 @@
 	        });  
 	        $('.popup_menu a[menu="closeAll"]').on('click', function (){  
 	        	$('#menu-list a').each(function(){
-	        		//关闭所有，除了首页
+	        		//关闭所有
         			tabPlug.closemenu.call($(this).find('.menu-close')[0]);
 	        	});
 	        	$('.popup_menu').hide();  
