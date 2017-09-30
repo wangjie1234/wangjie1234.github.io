@@ -26,7 +26,7 @@ body {
 	width:100%;
 	border-top:1px solid #f1f0f0;
 	border-bottom:2px solid;
-	border-bottom-color:#000;
+	border-bottom-color:#4F99C6;
 	position:relative;
 	line-height:30px
 }
@@ -126,7 +126,8 @@ body {
 	margin-top:-2px
 }
 #page-tab .menu-close:hover {
-	background-image:url(../img/closehover.png)
+	background-image:url(../img/closehover.png);
+	background-color: #d15b47;
 }
 #menu-all {
 	width:175px;
@@ -173,4 +174,34 @@ body {
 }
 #page-content .active {
 	display:block
+}
+//tab页右击菜单的样式
+.popup_menu ul,li {
+	margin:0;
+	padding:0;
+	list-style:none;
+	font-size:12px;
+}
+.popup_menu {
+	position:absolute;
+	z-index:90;
+	border:1px solid #AEAEAE;
+	padding:2px;
+	width:80px;
+	border-radius:5px;
+	background-color: #FFFFFF;
+}
+.popup_menu a {
+	display:block;
+	color:#325B8E;
+	text-indent:12px;
+	text-decoration:none;
+	height:26px;
+	line-height:25px;
+	padding-right:5px;
+}
+.popup_menu a:hover {
+	background:#57B4E4;
+	color:#fff;
+	border-radius:5px;
 }

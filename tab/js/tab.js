@@ -1,4 +1,4 @@
-﻿(function() {
+﻿var tabPlug=(function($, window, document) {
     var scrollSetp = 500,
     operationWidth = 90,
     leftOperationWidth = 30,
@@ -9,7 +9,7 @@
         $("#page-content iframe.active").removeClass("active");
         $("#page-content .iframe-content[data-url='" + url + "'][data-value='" + value + "']").addClass("active");
         $("#menu-all-ul li.active").removeClass("active");
-        $("#menu-all-ul li[data-url='" + url + "'][data-value='" + value + "']").addClass("active")
+        $("#menu-all-ul li[data-url='" + url + "'][data-value='" + value + "']").addClass("active");
     },
     move = function(selDom) {
         var nav = $("#menu-list");
@@ -20,13 +20,13 @@
             nav.animate({
                 "margin-left": (left - releft + leftOperationWidth) + "px"
             },
-            animatSpeed)
+            animatSpeed);
         } else {
             if (releft + selDom.width() > wwidth - operationWidth) {
                 nav.animate({
                     "margin-left": (left - releft + wwidth - selDom.width() - operationWidth) + "px"
                 },
-                animatSpeed)
+                animatSpeed);
             }
         }
     },
@@ -62,10 +62,14 @@
                     }
                 }
             }
+            //删除导航标签
             this.remove();
+            //删除对应的iframe标签
             $("#page-content .iframe-content[data-url='" + jthis.data("url") + "'][data-value='" + jthis.data("value") + "']").remove()
+        	//删除右边快捷导航对应的标签
+			$("#menu-all-ul [data-url='" + jthis.data("url")+"']").remove();
         });
-        event.stopPropagation()
+        event.stopPropagation();
     },
     init = function() {
         $("#page-prev").bind("click",
@@ -76,7 +80,7 @@
                 nav.animate({
                     "margin-left": (left + scrollSetp > 0 ? 0 : (left + scrollSetp)) + "px"
                 },
-                animatSpeed)
+                animatSpeed);
             }
         });
         $("#page-next").bind("click",
@@ -91,29 +95,29 @@
                 nav.animate({
                     "margin-left": (temp < allshowleft ? allshowleft: temp) + "px"
                 },
-                animatSpeed)
+                animatSpeed);
             }
         });
         $("#page-operation").bind("click",
         function() {
             var menuall = $("#menu-all");
-            if (menuall.is(":visible")) {
-                menuall.hide()
+            if (menuall.is(":visible")){
+                menuall.hide();
             } else {
-                menuall.show()
+                menuall.show();
             }
         });
-        $("body").bind("mousedown",
-        function(event) {
+        $("body").bind("mousedown",function(event) {
             if (! (event.target.id === "menu-all" || event.target.id === "menu-all-ul" || event.target.id === "page-operation" || event.target.id === "page-operation" || event.target.parentElement.id === "menu-all-ul")) {
                 $("#menu-all").hide()
             }
+            event.stopPropagation();
         })
     };
-    $.fn.tab = function() {
+    $.fn.tab = function(){
         init();
         this.bind("click",
-        function() {
+        function(){
             var linkUrl = this.href;
             var linkHtml = this.text.trim();
             var selDom = $("#menu-list a[data-url='" + linkUrl + "'][data-value='" + linkHtml + "']");
@@ -147,15 +151,81 @@
                     linkframe(jthis.data("url"), jthis.data("value"));
                     move($("#menu-list a[data-url='" + linkUrl + "'][data-value='" + linkHtml + "']"));
                     $("#menu-all").hide();
-                    event.stopPropagation()
+                    event.stopPropagation();
                 }).appendTo("#menu-all-ul");
-                createmove()
+                createmove();
             } else {
-                move(selDom)
+                move(selDom);
             }
             linkframe(linkUrl, linkHtml);
-            return false
+            return false;
         });
-        return this
+        return this;
     }
-})();
+    /***
+     * 将内部函数作为返回值返回，形成闭包。
+     * 在函数外部可以调用。
+     * */
+    return {
+    	closemenu:closemenu
+        ,linkframe:linkframe
+    }
+})(jQuery, window, document);
+  /**
+     * 右击事件
+     * */
+    //取消右键  
+	$('html').on('contextmenu', function (){return false;}).click(function(){  
+	    $('.popup_menu').hide();  
+	});  
+	//注册右击事件
+	$('html').on('contextmenu','a',function(e){
+		var that= this;
+	    var popupmenu = kyoPopupMenu.initContextmenu(that);  
+	    l = ($(document).width() - e.clientX) < popupmenu.width() ? (e.clientX - popupmenu.width()) : e.clientX;  
+	    t = ($(document).height() - e.clientY) < popupmenu.height() ? (e.clientY - popupmenu.height()) : e.clientY;  
+		popupmenu.css({left: l,top: t}).show();  
+	    return false;  
+	});  
+	//生成右击事件菜单
+	var kyoPopupMenu={};  
+	kyoPopupMenu = (function(){ 
+	return {  
+	    initContextmenu: function (obj) {
+	    	//获取当前触发右键点击事件的table的ID
+	        $('.popup_menu').remove(); 
+	        var html='<div class="popup_menu">';
+	        		html+='<ul style="list-style:none;margin:0;	padding:0;font-size:12px;">';
+	        		html+='<li><a menu="updateTab">刷新</a></li>';
+	        		html+='<li><a menu="closeTab">关闭</a></li>';
+	        		html+='<li><a menu="closeOther">关闭其他</a></li>';
+	    			html+='<li><a menu="closeAll">关闭所有</a></li>';
+	        		html+='</ul>';
+	        		html+='</div>';
+	        popupMenuApp = $(html).find('a').attr('href','javascript:;').end().appendTo('body');  
+	        //绑定事件  
+	        $('.popup_menu a[menu="updateTab"]').on('click', function (){  
+	        	//刷新当前的
+	        	tabPlug.linkframe($(obj).attr('data-url'),$(obj).attr('data-value'));
+	        });  
+	        $('.popup_menu a[menu="closeTab"]').on('click', function (){  
+	        	//关闭当前选中的
+	        	tabPlug.closemenu.call($(obj).find('.menu-close')[0]);
+	        });  
+	        $('.popup_menu a[menu="closeOther"]').on('click', function (){  
+				//关闭除了选中的其他tab
+	        	$.each($(obj).siblings(), function() {
+	        		tabPlug.closemenu.call($(this).find('.menu-close')[0]);
+	        	});
+	        	$('.popup_menu').hide();  
+	        });  
+	        $('.popup_menu a[menu="closeAll"]').on('click', function (){  
+	        	$('#menu-list a').each(function(){
+	        		//关闭所有，除了首页
+        			tabPlug.closemenu.call($(this).find('.menu-close')[0]);
+	        	});
+	        	$('.popup_menu').hide();  
+	        }); 
+	        return popupMenuApp;  
+	    }  
+	}})(); 
